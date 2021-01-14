@@ -69,6 +69,8 @@ void sfree(void* p) {
 }
 
 
+// TODO - should we free before?
+// TODO we need to make sure is_free = false?
 void* srealloc(void* oldp, size_t size) {
     if (size == 0 || size > 1e8) {  // TODO
         return NULL;
@@ -80,6 +82,7 @@ void* srealloc(void* oldp, size_t size) {
     auto *mm = (MallocMetadata *) ((size_t) oldp - sizeof(MallocMetadata));
     if (size <= mm->size) {
         mm->is_free = false;
+        // mm.size = size //TODO - should we add it?
         return oldp;
     }
 
