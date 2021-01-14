@@ -1,6 +1,6 @@
 /*
 g++ malloc_2.cpp -fPIC -shared -o libmal.so
-g++ tamuz_tests_hw4.cpp -L ./ -lmal
+g++ tamuz_tests_hw4_malloc2.cpp -L ./ -lmal
 
 export LD_LIBRARY_PATH="/root/hw4/"
  */
