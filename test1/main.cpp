@@ -129,8 +129,8 @@ void malloc3_test_01() {
     sfree(third);
     assert(_num_free_blocks() == 1);
     assert(_num_allocated_blocks() == 2);
-    assert(_num_free_bytes() == 720+_size_meta_data());
-    assert(_num_allocated_bytes() == 920+_size_meta_data());
+    assert(_num_free_bytes() == 720 + _size_meta_data());
+    assert(_num_allocated_bytes() == 920 + _size_meta_data());
     sfree(first);
     assert(_num_free_blocks() == 1);
     assert(_num_allocated_blocks() == 1);
@@ -179,6 +179,7 @@ void malloc3_test_01() {
 void malloc3_test_02() {
     if(_num_allocated_bytes() == 920+2*_size_meta_data()){
         std::cout<<" WHY DONT YOU LISTEN?! RUN THIS FUNCTION ALONE! :) "<<std::endl;
+        exit(0);
     }
     assert(_num_allocated_bytes()  == 0);
     char* first_sbrk =(char*) srealloc(nullptr, 100);
@@ -228,6 +229,7 @@ void malloc3_test_02() {
     sfree(third_sbrk);
     assert(_num_free_bytes() == 50);
     forth_sbrk=(char*) srealloc(forth_sbrk,160);
+    // TODO  - from here test is failing because we prefer to merge with prev rathet then expand last
     assert(forth_sbrk);
     assert(_num_free_bytes() == 50);
     assert(_num_allocated_blocks() == 4);
@@ -281,10 +283,9 @@ void malloc3_test_03(){
 int main(){
 
     //malloc2_test_01() check it for malloc2 before this test
-    //malloc3_test_01();
-    //malloc3_test_02();
-    //malloc3_test_03();
-
+//    malloc3_test_01();
+//     malloc3_test_02();
+//    malloc3_test_03();
 
     return 0;
 }
