@@ -228,8 +228,8 @@ void * small_srealloc(MallocMetadata* mm, void* oldp, size_t size) {
     //option 4 - merge with next && prev
     if (mm->next != nullptr and mm->prev != nullptr and mm->next->is_free and mm->prev->is_free and size <= mm->size + mm->next->size + mm->prev->size + 2 * sizeof(MallocMetadata)) {
         MallocMetadata* prev = mm->prev;
-        _merge_next(prev);
-        _merge_next(prev); // now it will be three of them
+        _merge_next(mm);
+        _merge_prev(mm);
         memcpy( (void*)((size_t)prev + sizeof(MallocMetadata)), oldp , mm->size);
         return _split(prev, size);
     }
