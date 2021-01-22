@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <string.h>
-#include <assert.h> // TODO remove this after finish
 
 struct MallocMetadata {
     size_t  size;
@@ -35,10 +34,6 @@ void* _split(MallocMetadata* node, size_t size) {
 }
 
 void _merge_prev(MallocMetadata* node) {
-    //TODO remove assert after done
-    assert(node->prev);
-    assert(node->prev->is_free);
-
     MallocMetadata* prev = node->prev;
     prev->size += node->size + sizeof(MallocMetadata);
     prev->next = node->next;
@@ -48,10 +43,6 @@ void _merge_prev(MallocMetadata* node) {
 
 
 void _merge_next(MallocMetadata* node) {
-    //TODO remove assert after done
-    assert(node->next);
-    assert(node->next->is_free);
-
     MallocMetadata* next = node->next;
     node->size += next->size + sizeof(MallocMetadata);
     node->next =next->next;
@@ -154,7 +145,6 @@ void sfree(void* p) {
     if(mm->size >= 1024 * 128) { //mmap
         int res = munmap(mm,mm->size+sizeof(MallocMetadata));
 
-        // TODO - is this the right way to check of failed
         if (res == -1)
             return;
 
@@ -204,7 +194,7 @@ void * map_srealloc(MallocMetadata* mm, void* oldp, size_t size) {
 void * small_srealloc(MallocMetadata* mm, void* oldp, size_t size) {
     // option 1 - using same block
     if (size <= mm->size) {
-        mm->is_free = false; // TODO is it necessary ? maybe we should check in advance
+        mm->is_free = false;
         return _split(mm, size);
     }
 
@@ -263,7 +253,7 @@ void * small_srealloc(MallocMetadata* mm, void* oldp, size_t size) {
 
 
 void* srealloc(void* oldp, size_t size) {
-    if (size == 0 || size > 1e8) {  // TODO what if its smaller
+    if (size == 0 || size > 1e8) {
         return NULL;
     }
 
@@ -279,8 +269,6 @@ void* srealloc(void* oldp, size_t size) {
         return small_srealloc(mm, oldp, size);
     }
 }
-
-
 
 
 size_t _num_free_blocks() {
