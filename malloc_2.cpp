@@ -2,7 +2,6 @@
 // Created by student on 1/13/21.
 //
 #include <unistd.h>
-//#include <stdio.h>
 #include <string.h>
 
 struct MallocMetadata {
@@ -81,7 +80,6 @@ void* srealloc(void* oldp, size_t size) {
     auto *mm = (MallocMetadata *) ((size_t) oldp - sizeof(MallocMetadata));
     if (size <= mm->size) {
         mm->is_free = false;
-        // mm.size = size //TODO - should we add it?
         return oldp;
     }
 

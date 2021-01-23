@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <string.h>
-#include <assert.h> // TODO remove this after finish
 
 struct MallocMetadata {
     size_t  size;
@@ -44,10 +43,6 @@ void _merge_prev(MallocMetadata* node) {
 
 
 void _merge_next(MallocMetadata* node) {
-    //TODO remove assert after done
-    assert(node->next);
-    assert(node->next->is_free);
-
     MallocMetadata* next = node->next;
     node->size += next->size + sizeof(MallocMetadata);
     node->next =next->next;
@@ -129,7 +124,7 @@ void* smalloc(size_t size) {
 
 void* scalloc(size_t num, size_t size) {
     if (num>0) { // rest of checks are done when calling to smalloc
-        size = size%8 == 0 ? size : size + 8 - (size%8) ; // challenge 5
+        size = size%8 == 0 ? size : size + 8 - (size%8) ; // challenge 5 // TODO
         void* res = smalloc(size*num);
         if (res) {
             memset(res,0,size*num);
@@ -201,7 +196,7 @@ void * map_srealloc(MallocMetadata* mm, void* oldp, size_t size) {
 void * small_srealloc(MallocMetadata* mm, void* oldp, size_t size) {
     // option 1 - using same block
     if (size <= mm->size) {
-        mm->is_free = false; // TODO is it necessary ? maybe we should check in advance
+        mm->is_free = false;
         return _split(mm, size);
     }
 
@@ -219,6 +214,7 @@ void * small_srealloc(MallocMetadata* mm, void* oldp, size_t size) {
         return _split(mm, size);
     }
 
+
     //option 4 - merge with next && prev
     if (mm->next != nullptr and mm->prev != nullptr and mm->next->is_free and mm->prev->is_free and size <= mm->size + mm->next->size + mm->prev->size + 2 * sizeof(MallocMetadata)) {
         MallocMetadata* prev = mm->prev;
@@ -233,14 +229,14 @@ void * small_srealloc(MallocMetadata* mm, void* oldp, size_t size) {
     if (res) {
         memcpy(res, oldp, mm->size);
         sfree(oldp);
-        // if smalloc failed and we merge with prev that a problem - we un marge
     }
+
     return res;
 }
 
 
 void* srealloc(void* oldp, size_t size) {
-    if (size == 0 || size > 1e8) {  // TODO
+    if (size == 0 || size > 1e8) {
         return NULL;
     }
     size = size%8 == 0 ? size : size + 8 - (size%8) ; // challenge 5
@@ -326,3 +322,4 @@ size_t _num_meta_data_bytes() {
 size_t _size_meta_data() {
     return sizeof(MallocMetadata);
 }
+
